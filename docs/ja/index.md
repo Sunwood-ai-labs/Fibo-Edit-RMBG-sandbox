@@ -6,7 +6,7 @@ hero:
   text: UV ベースのローカル背景除去ワークフロー
   tagline: BRIA のゲート付き Fibo-Edit-RMBG をローカル実行し、境界の差分比較と Windows GPU 上の制約を記録します。
   image:
-    src: /fibo-cutout-mark.svg
+    src: /logo.svg
     alt: Fibo-Edit-RMBG Sandbox icon
   actions:
     - theme: brand
@@ -16,8 +16,8 @@ hero:
       text: 実験ガイド
       link: /ja/guide/experiments
     - theme: alt
-      text: GitHub
-      link: https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox
+      text: English Docs
+      link: /
 
 features:
   - title: ローカル CLI 中心
@@ -34,3 +34,10 @@ features:
 - 実験結果の読み方
 - 既知の制約
 - ライセンス境界
+
+英語版は [English docs](/) から開けます。
+
+リポジトリ参照:
+
+- [GitHub リポジトリ](https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox)
+- [実験ギャラリー](https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox/blob/main/experiments/README.md)

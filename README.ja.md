@@ -24,12 +24,6 @@
   <img src="https://img.shields.io/badge/license-MIT-2EA043" alt="MIT license" />
 </p>
 
-<p align="center">
-  <a href="https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/">Docs Site</a>
-  |
-  <a href="./experiments/README.md">Experiment Gallery</a>
-</p>
-
 ## ✨ 概要
 
 このリポジトリでは `briaai/Fibo-Edit-RMBG` を扱うための最小限の実用環境をまとめています。
@@ -42,6 +36,11 @@
 ここに含まれるのはラッパーコード、ドキュメント、実験成果物です。
 上流モデルの重みは同梱していません。利用には Hugging Face 側でのアクセス承認と、
 BRIA の `bria-fibo-edit` 条件への同意が必要です。
+
+主要リンク:
+
+- [Docs サイト](https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/)
+- [実験ギャラリー](./experiments/README.md)
 
 ## 🚀 クイックスタート
 
@@ -107,7 +106,7 @@ uv run python .\scripts\run_edge_experiments.py --resume
 uv run python .\scripts\run_edge_experiments.py --postprocess-only
 ```
 
-<img src="./experiments/overview.png" alt="Edge experiment overview gallery" width="1200" />
+<img src="./experiments/overview.png" alt="4 枚の入力画像に対する境界マスク比較の overview" width="1200" />
 
 参照先:
 

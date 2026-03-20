@@ -6,7 +6,7 @@ hero:
   text: UV-first local background-removal workflow
   tagline: Run BRIA's gated Fibo-Edit-RMBG model locally, compare edge behavior, and document Windows GPU tradeoffs.
   image:
-    src: /fibo-cutout-mark.svg
+    src: /logo.svg
     alt: Fibo-Edit-RMBG Sandbox icon
   actions:
     - theme: brand
@@ -16,8 +16,8 @@ hero:
       text: Experiment Guide
       link: /guide/experiments
     - theme: alt
-      text: GitHub Repo
-      link: https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox
+      text: 日本語 Docs
+      link: /ja/
 
 features:
   - title: Local CLI first
@@ -36,5 +36,12 @@ This project is intentionally narrow:
 - saved example outputs under `outputs/`
 - experiment reports under `experiments/`
 - a reusable sweep script under `scripts/run_edge_experiments.py`
+
+Need the Japanese version? Open [日本語 docs](/ja/).
+
+Repository links:
+
+- [GitHub repository](https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox)
+- [Experiment gallery](https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox/blob/main/experiments/README.md)
 
 Use the guide pages for quickstart, CLI details, experiments, troubleshooting, and licensing boundaries.

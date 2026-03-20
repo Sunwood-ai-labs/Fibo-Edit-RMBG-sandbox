@@ -594,19 +594,25 @@ def write_by_input_markdown(input_path: Path, rows: list[dict[str, object]], com
     rows = sorted(rows, key=lambda row: (row["status"] != "success", row["runtime_sec"]))
     lines = [f"# {input_path.name}", ""]
     if compare_path is not None:
-        lines.extend([f"![comparison](./{compare_path.name})", ""])
+        lines.extend(
+            [
+                f"![Comparison board highlighting full-mask and edge-crop differences for {input_path.name}](./{compare_path.name})",
+                "",
+            ]
+        )
     lines.extend(
         [
-            "| Variant | Status | Runtime (s) | Run | Notes |",
+            "Published pages keep the representative run ID for traceability. Raw `experiments/runs/` folders stay local-only and are ignored by Git.",
+            "",
+            "| Variant | Status | Runtime (s) | Run ID | Notes |",
             "| --- | --- | ---: | --- | --- |",
         ]
     )
     for row in rows:
         run_dir = Path(str(row["run_dir"])).name
-        run_link = f"[{run_dir}](../runs/{run_dir}/README.md)"
         notes = str(row["notes"]).replace("\n", " ")
         lines.append(
-            f"| {row['label']} | {row['status']} | {row['runtime_sec']} | {run_link} | {notes} |"
+            f"| {row['label']} | {row['status']} | {row['runtime_sec']} | `{run_dir}` | {notes} |"
         )
 
     best_hint = next((row for row in rows if row["variant_slug"] == "balanced_s320_n4" and row["status"] == "success"), None)
@@ -630,7 +636,14 @@ def write_experiments_readme(rows: list[dict[str, object]]) -> None:
         if preferred is None:
             preferred = next((row for row in candidates if row["variant_slug"] == "balanced_s256_n4"), None)
         if preferred is not None:
-            recommended.append((input_name, preferred["label"], Path(str(preferred["run_dir"])).name))
+            recommended.append(
+                (
+                    input_name,
+                    preferred["label"],
+                    Path(str(preferred["run_dir"])).name,
+                    Path(input_name).stem,
+                )
+            )
 
     lines = [
         "# Edge Experiments",
@@ -638,15 +651,17 @@ def write_experiments_readme(rows: list[dict[str, object]]) -> None:
         "Parameter sweep focused on reducing jagged cutout edges on the current Windows + RTX 3060 6GB environment.",
         "",
         f"- Representative rows: `{len(rows)}` (`{len(success_rows)}` success / `{len(failed_rows)}` failed)",
-        f"- Raw run folders: [`runs/`](./runs/)",
+        "- Raw run folders: local-only under `experiments/runs/` and ignored by Git",
         f"- CSV summary: [`summary.csv`](./summary.csv)",
         "",
         "## Current Recommendation",
         "",
     ]
     if recommended:
-        for input_name, label, run_dir in recommended:
-            lines.append(f"- `{input_name}`: start by reviewing `{label}` in [`{run_dir}`](./runs/{run_dir}/README.md)")
+        for input_name, label, run_dir, stem in recommended:
+            lines.append(
+                f"- [`{input_name}`](./by-input/{stem}.md): start with `{label}`. Representative run ID: `{run_dir}`"
+            )
     else:
         lines.append("- No successful runs recorded yet.")
 
@@ -655,7 +670,7 @@ def write_experiments_readme(rows: list[dict[str, object]]) -> None:
             "",
             "## Overview Gallery",
             "",
-            '<img alt="Edge experiment overview" src="./overview.png" width="1200" />',
+            '<img alt="Overview gallery comparing edge-mask behavior across four example inputs" src="./overview.png" width="1200" />',
             "",
             "## What To Look For",
             "",
@@ -675,31 +690,11 @@ def write_experiments_readme(rows: list[dict[str, object]]) -> None:
     lines.extend(
         [
             "",
-            "## Embedded Compare Boards",
-            "",
-        ]
-    )
-    for input_name in input_names:
-        stem = Path(input_name).stem
-        lines.extend(
-            [
-                f"### {input_name}",
-                "",
-                f"[Open notes and run table](./by-input/{stem}.md)",
-                "",
-                f'<img alt="{input_name} edge comparison" src="./by-input/{stem}.compare.png" width="1200" />',
-                "",
-            ]
-        )
-
-    lines.extend(
-        [
-            "",
             "## Failure Notes",
             "",
             "- `balanced / 320 / 4 steps` can trip `MemoryError` on the heaviest input in this 6GB GPU + Windows setup.",
             "- One `hard / 256 / 4 steps / thr128` retry ended in a native crash during pipeline load; the run folder is kept for reference.",
-            "- Raw retries are preserved under [`runs/`](./runs/), while [`summary.csv`](./summary.csv) and the `by-input/` pages keep one representative row per input x variant.",
+            "- Raw retries are preserved locally under `experiments/runs/`, while [`summary.csv`](./summary.csv) and the `by-input/` pages keep one representative row per input x variant for publishing.",
         ]
     )
 

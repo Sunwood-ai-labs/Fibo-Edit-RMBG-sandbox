@@ -23,12 +23,6 @@
   <img src="https://img.shields.io/badge/license-MIT-2EA043" alt="MIT license" />
 </p>
 
-<p align="center">
-  <a href="https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/">Docs Site</a>
-  |
-  <a href="./experiments/README.md">Experiment Gallery</a>
-</p>
-
 ## ✨ Overview
 
 This repository wraps a local workflow around `briaai/Fibo-Edit-RMBG` so you can:
@@ -41,6 +35,11 @@ This repository wraps a local workflow around `briaai/Fibo-Edit-RMBG` so you can
 This repo contains wrapper code, docs, and recorded experiment artifacts.
 It does **not** redistribute the upstream model weights. Access to the model still depends on
 Hugging Face approval and BRIA's gated `bria-fibo-edit` terms.
+
+Primary links:
+
+- [Docs site](https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/)
+- [Experiment gallery](./experiments/README.md)
 
 ## 🚀 Quick Start
 
@@ -106,7 +105,7 @@ Rebuild compare boards and summaries without rerunning inference:
 uv run python .\scripts\run_edge_experiments.py --postprocess-only
 ```
 
-<img src="./experiments/overview.png" alt="Edge experiment overview gallery" width="1200" />
+<img src="./experiments/overview.png" alt="Overview gallery comparing edge masks across four example inputs" width="1200" />
 
 See also:
 

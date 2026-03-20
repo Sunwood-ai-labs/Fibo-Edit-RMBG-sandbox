@@ -24,7 +24,7 @@ uv run python .\scripts\run_edge_experiments.py --postprocess-only
 
 ## Saved overview
 
-![Experiment overview](/experiments/overview.png)
+![Overview gallery comparing edge-mask behavior across four example inputs](/edge-overview.png)
 
 ## Current recommendation
 

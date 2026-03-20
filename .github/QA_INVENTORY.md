@@ -72,3 +72,21 @@
 - `pyproject.toml` metadata accuracy
 - Test command execution
 - GitHub metadata update confirmation if applied
+
+## Validation Results
+
+- `uv run --with pytest --with pillow --with python-dotenv pytest` -> passed (`6` tests)
+- `uv run --with pillow --with python-dotenv python -m fibo_edit_rmbg_sandbox.cli --help` -> passed
+- `uv run python .\scripts\run_edge_experiments.py --help` -> passed
+- `uv run python .\scripts\run_edge_experiments.py --postprocess-only` -> passed
+- `npm run docs:build` in `docs/` -> passed
+- `uv build` -> passed
+- Markdown sweep for stale public references to `runs/.../README.md`, `/experiments/overview.png`, and `/fibo-cutout-mark.svg` under `docs/` and `experiments/` -> passed
+- GitHub repository metadata updated through `gh repo edit`
+- GitHub Pages site created through workflow-backed Pages configuration
+
+## Residual Notes
+
+- Raw experiment retries remain local-only under `experiments/runs/` and are intentionally excluded from Git.
+- The saved experiment gallery publishes representative run IDs instead of raw run-folder links.
+- Vite/VitePress dev dependencies previously reported moderate audit findings, but no newer stable `vitepress` release was available during this polish pass.

@@ -24,7 +24,7 @@ uv run python .\scripts\run_edge_experiments.py --postprocess-only
 
 ## 保存済み overview
 
-![Experiment overview](/experiments/overview.png)
+![4 枚の入力画像に対する境界マスク比較の overview](/edge-overview.png)
 
 ## 現在の推奨
 
