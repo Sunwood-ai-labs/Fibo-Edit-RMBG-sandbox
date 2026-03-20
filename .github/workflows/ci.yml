@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  python-smoke:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        python-version:
+          - "3.11"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Run helper tests
+        run: uv run --with pytest --with pillow --with python-dotenv pytest
+
+      - name: Smoke-check CLI help
+        run: uv run --with pillow --with python-dotenv python -m fibo_edit_rmbg_sandbox.cli --help
+
+      - name: Smoke-check experiment runner help
+        run: uv run --with numpy --with pillow python scripts/run_edge_experiments.py --help
+
+      - name: Build Python package
+        run: uv build
+
+  docs-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install docs dependencies
+        working-directory: docs
+        run: npm ci
+
+      - name: Build VitePress docs
+        working-directory: docs
+        run: npm run docs:build

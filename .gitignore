@@ -191,6 +191,14 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
+# Node / docs
+docs/node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+docs/public/experiments/
+logs/
+run-*.log
+
 # PyPI configuration file
 .pypirc
 

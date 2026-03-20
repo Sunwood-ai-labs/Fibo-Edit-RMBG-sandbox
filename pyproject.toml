@@ -1,9 +1,31 @@
 [project]
 name = "fibo-edit-rmbg-sandbox"
 version = "0.1.0"
-description = "uv sandbox for running briaai/Fibo-Edit-RMBG"
+description = "UV-powered sandbox CLI for gated BRIA Fibo-Edit-RMBG background removal experiments"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
+license = { text = "MIT" }
+authors = [
+    { name = "Sunwood AI Labs" },
+]
+keywords = [
+    "background-removal",
+    "diffusers",
+    "hugging-face",
+    "image-matting",
+    "python",
+    "uv",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
 dependencies = [
     "accelerate",
     "diffusers",
@@ -16,6 +38,12 @@ dependencies = [
     "torchvision",
     "transformers",
 ]
+
+[project.urls]
+Homepage = "https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/"
+Documentation = "https://sunwood-ai-labs.github.io/Fibo-Edit-RMBG-sandbox/"
+Repository = "https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox"
+Issues = "https://github.com/Sunwood-ai-labs/Fibo-Edit-RMBG-sandbox/issues"
 
 [project.scripts]
 fibo-rmbg = "fibo_edit_rmbg_sandbox.cli:main"
