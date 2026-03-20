@@ -113,6 +113,40 @@ See also:
 - [Per-input compare boards](./experiments/by-input/)
 - [Canonical CSV summary](./experiments/summary.csv)
 
+### Per-Input Boards
+
+#### `car-palette-team-style-2k.png`
+
+A vehicle cutout with a long curved spoiler edge, trim decals, and narrow protrusions. This board is the clearest check for how each mask style handles smooth automotive curves without turning them into stair-steps.
+
+Start with `balanced / 320 / 4 steps`.
+
+<img src="./experiments/by-input/car-palette-team-style-2k.compare.png" alt="Per-input compare board for car-palette-team-style-2k showing spoiler-edge behavior across variants" width="920" />
+
+#### `delpmaspu-2k.png`
+
+A flat illustration with a long shallow cream-colored curve against transparency. This is the best board for spotting halos versus clean anti-aliased alpha on simple rounded edges.
+
+Start with `balanced / 320 / 4 steps`.
+
+<img src="./experiments/by-input/delpmaspu-2k.compare.png" alt="Per-input compare board for delpmaspu-2k focusing on a smooth curved illustration edge" width="920" />
+
+#### `grok-image-square.png`
+
+A repeated jet or spaceship-style silhouette with diagonal fins and sharp corners. This stress case makes it easy to judge whether a setting keeps pointed edges crisp without the blockiness seen in `hard`.
+
+Start with `balanced / 320 / 4 steps`.
+
+<img src="./experiments/by-input/grok-image-square.compare.png" alt="Per-input compare board for grok-image-square focusing on diagonal fins and sharp corners" width="920" />
+
+#### `kling-generate-square.png`
+
+A low-resolution pixel-art dog with intentionally chunky contours. This board is useful because it shows the tradeoff between preserving stylized block edges and avoiding over-quantized hard-mask artifacts.
+
+Start with `balanced / 256 / 4 steps` because the `320 / 4 steps` variant failed on this machine.
+
+<img src="./experiments/by-input/kling-generate-square.compare.png" alt="Per-input compare board for kling-generate-square showing pixel-art contour handling across variants" width="920" />
+
 ## ⚙️ CLI Notes
 
 The current CLI supports:

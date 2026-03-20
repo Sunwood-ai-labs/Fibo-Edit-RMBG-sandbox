@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import os
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -24,6 +25,9 @@ BY_INPUT_DIR = EXPERIMENTS_DIR / "by-input"
 SUMMARY_CSV = EXPERIMENTS_DIR / "summary.csv"
 EXPERIMENTS_README = EXPERIMENTS_DIR / "README.md"
 OVERVIEW_IMAGE = EXPERIMENTS_DIR / "overview.png"
+DOCS_PUBLIC_DIR = REPO_ROOT / "docs" / "public"
+DOCS_GALLERY_DIR = DOCS_PUBLIC_DIR / "edge-gallery"
+DOCS_OVERVIEW_IMAGE = DOCS_PUBLIC_DIR / "edge-overview.png"
 
 
 @dataclass(frozen=True)
@@ -706,10 +710,12 @@ def update_compare_paths(rows: list[dict[str, object]]) -> None:
     for row in rows:
         grouped.setdefault(str(row["input"]), []).append(row)
 
+    compare_paths: list[Path] = []
     for input_name, input_rows in grouped.items():
         input_path = EXAMPLE_DIR / input_name
         compare_path = create_input_compare_board(input_path, input_rows)
         if compare_path is not None:
+            compare_paths.append(compare_path)
             for row in input_rows:
                 row["compare_path"] = compare_path.relative_to(REPO_ROOT).as_posix()
                 run_json_path = REPO_ROOT / str(row["run_dir"]) / "run.json"
@@ -717,7 +723,20 @@ def update_compare_paths(rows: list[dict[str, object]]) -> None:
                 data["compare_path"] = row["compare_path"]
                 write_text(run_json_path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
         write_by_input_markdown(input_path, input_rows, compare_path)
-    create_overview_board(rows)
+    overview_path = create_overview_board(rows)
+    sync_docs_gallery(compare_paths, overview_path)
+
+
+def sync_docs_gallery(compare_paths: list[Path], overview_path: Path | None) -> None:
+    DOCS_PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_GALLERY_DIR.mkdir(parents=True, exist_ok=True)
+
+    if overview_path is not None and overview_path.exists():
+        shutil.copy2(overview_path, DOCS_OVERVIEW_IMAGE)
+
+    for compare_path in compare_paths:
+        if compare_path.exists():
+            shutil.copy2(compare_path, DOCS_GALLERY_DIR / compare_path.name)
 
 
 def main(argv: list[str] | None = None) -> int:

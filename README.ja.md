@@ -114,6 +114,40 @@ uv run python .\scripts\run_edge_experiments.py --postprocess-only
 - [Per-input compare boards](./experiments/by-input/)
 - [Canonical CSV summary](./experiments/summary.csv)
 
+### 入力ごとの比較ボード
+
+#### `car-palette-team-style-2k.png`
+
+車体の長いスポイラー曲線、細いパーツ、ロゴまわりを含むケースです。曲線の境界が階段状にならないかを確認するのにいちばん分かりやすい比較です。
+
+最初は `balanced / 320 / 4 steps` から見るのが安全です。
+
+<img src="./experiments/by-input/car-palette-team-style-2k.compare.png" alt="car-palette-team-style-2k の比較ボード。スポイラー付近の境界表現を比較" width="920" />
+
+#### `delpmaspu-2k.png`
+
+単純なイラスト調の丸い輪郭と、なだらかな背景カーブを含むケースです。ハローの出方と、自然なアンチエイリアスの付き方を見比べるのに向いています。
+
+最初は `balanced / 320 / 4 steps` を確認してください。
+
+<img src="./experiments/by-input/delpmaspu-2k.compare.png" alt="delpmaspu-2k の比較ボード。なだらかな曲線境界の滑らかさを比較" width="920" />
+
+#### `grok-image-square.png`
+
+斜めのフィンや尖った角を多く含む、戦闘機風のシルエットです。先端のシャープさを残しつつ、`hard` のようなブロック感を避けられているかが見どころです。
+
+最初は `balanced / 320 / 4 steps` を見るのがおすすめです。
+
+<img src="./experiments/by-input/grok-image-square.compare.png" alt="grok-image-square の比較ボード。斜めのフィンと鋭い角の表現を比較" width="920" />
+
+#### `kling-generate-square.png`
+
+意図的にドット感のある犬のピクセルアートです。スタイルとしてのカクつきを残しつつ、不自然なハードマスク化を避けられるかを見るためのケースです。
+
+この入力だけは `320 / 4 steps` がこのマシンで失敗したため、`balanced / 256 / 4 steps` を先に見るのが現実解です。
+
+<img src="./experiments/by-input/kling-generate-square.compare.png" alt="kling-generate-square の比較ボード。ピクセルアート輪郭の扱いを比較" width="920" />
+
 ## ⚙️ CLI メモ
 
 主なオプション:

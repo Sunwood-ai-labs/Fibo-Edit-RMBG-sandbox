@@ -41,6 +41,7 @@
 - `docs/ja/guide/licensing.md`
 - `docs/.vitepress/config.*`
 - `docs/public/*`
+- `docs/public/edge-gallery/*`
 - `.github/workflows/ci.yml`
 - `.github/workflows/docs.yml`
 - `LICENSE`
@@ -81,6 +82,7 @@
 - `uv run python .\scripts\run_edge_experiments.py --postprocess-only` -> passed
 - `npm run docs:build` in `docs/` -> passed
 - `uv build` -> passed
+- Per-input compare boards are synced into `docs/public/edge-gallery/` for docs publishing
 - Markdown sweep for stale public references to `runs/.../README.md`, `/experiments/overview.png`, and `/fibo-cutout-mark.svg` under `docs/` and `experiments/` -> passed
 - GitHub repository metadata updated through `gh repo edit`
 - GitHub Pages site created through workflow-backed Pages configuration
