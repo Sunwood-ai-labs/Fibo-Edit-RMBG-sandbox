@@ -1,0 +1,25 @@
+[project]
+name = "fibo-edit-rmbg-sandbox"
+version = "0.1.0"
+description = "uv sandbox for running briaai/Fibo-Edit-RMBG"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "accelerate",
+    "diffusers",
+    "huggingface-hub",
+    "pillow",
+    "python-dotenv",
+    "safetensors",
+    "torch",
+    "torchaudio",
+    "torchvision",
+    "transformers",
+]
+
+[project.scripts]
+fibo-rmbg = "fibo_edit_rmbg_sandbox.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
