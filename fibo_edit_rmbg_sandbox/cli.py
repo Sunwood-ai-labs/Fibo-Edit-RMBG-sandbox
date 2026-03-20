@@ -6,14 +6,29 @@ import types
 from pathlib import Path
 
 from dotenv import load_dotenv
-from PIL import Image
+from PIL import Image, ImageOps
 
 MODEL_ID = "briaai/Fibo-Edit-RMBG"
-DEFAULT_INSTRUCTION = (
+SOFT_INSTRUCTION = (
     "Generate a detailed grayscale alpha matte. Map the opaque foreground to white "
     "and the background to black. Produce soft, anti-aliased grayscale gradients at "
     "the edges of the subject to represent fine details and transparency."
 )
+BALANCED_INSTRUCTION = (
+    "Generate a clean grayscale alpha matte. Keep the main foreground solid white and "
+    "the background black. Preserve only genuine semi-transparent details. Avoid weak "
+    "gray halos and unnecessary blur around the subject boundary."
+)
+HARD_INSTRUCTION = (
+    "Generate a crisp foreground cutout mask. Keep the subject solid white and the "
+    "background black. Use hard, well-defined edges unless real transparency is clearly "
+    "present. Avoid blur, halos, and low-contrast transitions around boundaries."
+)
+MASK_STYLE_TO_INSTRUCTION = {
+    "soft": SOFT_INSTRUCTION,
+    "balanced": BALANCED_INSTRUCTION,
+    "hard": HARD_INSTRUCTION,
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -63,6 +78,17 @@ def parse_args() -> argparse.Namespace:
         default="auto",
         choices=("auto", "match", "bfloat16", "float16", "float32"),
         help="Optional override for the VAE dtype. Useful if mixed precision fails in VAE ops.",
+    )
+    parser.add_argument(
+        "--mask-style",
+        default="balanced",
+        choices=("soft", "balanced", "hard"),
+        help="Controls edge softness. Use hard for crisper cutout boundaries.",
+    )
+    parser.add_argument(
+        "--alpha-threshold",
+        type=int,
+        help="Optional 0-255 alpha threshold applied after resize. Most useful with --mask-style hard.",
     )
     return parser.parse_args()
 
@@ -122,16 +148,27 @@ def resolve_vae_dtype(requested: str, pipeline_dtype, torch_module):
     return pipeline_dtype
 
 
-def resize_for_inference(image: Image.Image, max_side: int) -> Image.Image:
+def round_up_to_multiple(value: int, multiple: int) -> int:
+    return max(multiple, ((value + multiple - 1) // multiple) * multiple)
+
+
+def resize_for_inference(image: Image.Image, max_side: int, multiple: int = 32) -> Image.Image:
     if max_side <= 0:
         return image
 
     longest_edge = max(image.size)
     if longest_edge <= max_side:
+        new_size = image.size
+    else:
+        scale = max_side / float(longest_edge)
+        new_size = tuple(max(1, int(round(side * scale))) for side in image.size)
+
+    if multiple > 1:
+        new_size = tuple(round_up_to_multiple(side, multiple) for side in new_size)
+
+    if new_size == image.size:
         return image
 
-    scale = max_side / float(longest_edge)
-    new_size = tuple(max(1, int(round(side * scale))) for side in image.size)
     return image.resize(new_size, Image.LANCZOS)
 
 
@@ -238,6 +275,28 @@ def decode_latents_to_pil(pipe, latents, height: int, width: int, torch_module):
     return decoded_images[0]
 
 
+def postprocess_alpha(mask: Image.Image, original_size: tuple[int, int], mask_style: str, alpha_threshold: int | None) -> Image.Image:
+    resample = {
+        "soft": Image.LANCZOS,
+        "balanced": Image.BICUBIC,
+        "hard": Image.NEAREST,
+    }[mask_style]
+
+    alpha = mask.convert("L").resize(original_size, resample)
+
+    if mask_style in {"balanced", "hard"}:
+        cutoff = 1 if mask_style == "balanced" else 2
+        alpha = ImageOps.autocontrast(alpha, cutoff=cutoff)
+
+    if alpha_threshold is not None:
+        threshold = max(0, min(255, alpha_threshold))
+        alpha = alpha.point(lambda value: 255 if value >= threshold else 0)
+    elif mask_style == "hard":
+        alpha = alpha.point(lambda value: 255 if value >= 160 else 0)
+
+    return alpha
+
+
 def main() -> int:
     args = parse_args()
     input_path = Path(args.input).expanduser().resolve()
@@ -262,6 +321,7 @@ def main() -> int:
     device = resolve_device(args.device, torch)
     dtype = resolve_dtype(args.dtype, device, torch)
     vae_dtype = resolve_vae_dtype(args.vae_dtype, dtype, torch)
+    instruction = MASK_STYLE_TO_INSTRUCTION[args.mask_style]
 
     original_image = Image.open(input_path).convert("RGB")
     inference_image = resize_for_inference(original_image, args.max_side)
@@ -271,6 +331,7 @@ def main() -> int:
     print(f"Device: {device}")
     print(f"Dtype: {dtype}")
     print(f"VAE dtype: {vae_dtype}")
+    print(f"Mask style: {args.mask_style}")
     print(f"Input size: {original_image.size} -> inference size: {inference_image.size}")
 
     pipe = BriaFiboEditPipeline.from_pretrained(
@@ -296,7 +357,7 @@ def main() -> int:
 
     mask_latents = pipe(
         image=inference_image,
-        prompt={"edit_instruction": DEFAULT_INSTRUCTION},
+        prompt={"edit_instruction": instruction},
         height=inference_height,
         width=inference_width,
         num_inference_steps=args.num_inference_steps,
@@ -305,7 +366,7 @@ def main() -> int:
     ).images
     mask = decode_latents_to_pil(pipe, mask_latents, inference_height, inference_width, torch)
 
-    alpha = mask.convert("L").resize(original_image.size, Image.LANCZOS)
+    alpha = postprocess_alpha(mask, original_image.size, args.mask_style, args.alpha_threshold)
     rgba_image = original_image.copy()
     rgba_image.putalpha(alpha)
 
